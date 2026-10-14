@@ -1,0 +1,3 @@
+# Analyzer execution and quality diagnostics
+
+The runtime spike executed RuboCop 1.92.0, Flay 2.14.4 and Reek 6.6.0 on JRuby 10.1.2.0/JDK 25.0.1. The harness requires tests, zero RuboCop lint errors and successful analyzer execution. It retains full RuboCop style, Reek smell and Flay duplication reports as visible advisory diagnostics in this first slice; none are hidden by generated baselines or source exclusions. Geometry formulas and Swing event wiring produce many maintainability heuristics, so polishing every heuristic is deferred while behavior and lint remain blocking. RuboCop receives explicit repository config and ignores parent exclusions to avoid unrelated host Rails settings.

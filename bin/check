@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+cd "$root"
+bin/jruby -e 'require "java"; abort "JDK 25 required" unless java.lang.System.get_property("java.version").start_with?("25."); puts "#{RUBY_DESCRIPTION}; JDK #{java.lang.System.get_property("java.version")}"'
+bin/jruby test/all_test.rb
+if [ "${1:-}" != '--core' ]; then
+  bin/jruby test/editor_test.rb
+else
+  echo 'Core-only check requested: real desktop tests not run.'
+fi
+bin/jruby bin/quality.rb

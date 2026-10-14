@@ -15,3 +15,11 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+# Local JRuby runtime, generated reports and user scenes
+.runtime/
+.bundle/
+vendor/
+tmp/
+*.lbscene
+!examples/*.lbscene

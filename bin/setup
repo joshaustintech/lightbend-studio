@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+cd "$root"
+if ! java -version 2>&1 | head -n 1 | grep -Eq '"25([."]|$)'; then
+  echo 'Install an arm64 JDK 25 and set JAVA_HOME/PATH before running bin/setup.' >&2
+  exit 1
+fi
+if [ ! -x .runtime/jruby-10.1.2.0/bin/jruby ]; then
+  mkdir -p .runtime
+  curl -fL --retry 2 https://repo1.maven.org/maven2/org/jruby/jruby-dist/10.1.2.0/jruby-dist-10.1.2.0-bin.tar.gz -o .runtime/jruby.tar.gz
+  printf '%s  %s\n' '6dcb361bc1df554803fdd0243dc7c7a42723ac88a4b6f66830026afe82db28a8' '.runtime/jruby.tar.gz' | shasum -a 256 --check
+  tar -xzf .runtime/jruby.tar.gz -C .runtime
+fi
+bin/jruby -v
+bin/jruby -S bundle check || bin/jruby -S bundle install

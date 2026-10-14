@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="percent"><xs:restriction base="xs:decimal"><xs:minInclusive value="0"/><xs:maxInclusive value="100"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="positive"><xs:restriction base="xs:decimal"><xs:minExclusive value="0"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="channel"><xs:restriction base="xs:int"><xs:minInclusive value="0"/><xs:maxInclusive value="255"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="brightness"><xs:restriction base="xs:decimal"><xs:minInclusive value="0"/><xs:maxInclusive value="10000"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="fov"><xs:restriction base="xs:decimal"><xs:minExclusive value="0"/><xs:maxExclusive value="179"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="name"><xs:restriction base="xs:string"><xs:minLength value="1"/><xs:maxLength value="120"/></xs:restriction></xs:simpleType>
+  <xs:complexType name="vector"><xs:attribute name="x" type="xs:decimal" use="required"/><xs:attribute name="y" type="xs:decimal" use="required"/><xs:attribute name="z" type="xs:decimal" use="required"/></xs:complexType>
+  <xs:complexType name="scale"><xs:attribute name="x" type="positive" use="required"/><xs:attribute name="y" type="positive" use="required"/><xs:attribute name="z" type="positive" use="required"/></xs:complexType>
+  <xs:complexType name="color"><xs:attribute name="r" type="channel" use="required"/><xs:attribute name="g" type="channel" use="required"/><xs:attribute name="b" type="channel" use="required"/></xs:complexType>
+  <xs:complexType name="material"><xs:complexContent><xs:extension base="color"><xs:attribute name="reflection" type="percent" use="required"/><xs:attribute name="specular" type="percent" use="required"/><xs:attribute name="roughness" type="percent" use="required"/></xs:extension></xs:complexContent></xs:complexType>
+  <xs:complexType name="entity"><xs:sequence><xs:element name="position" type="vector"/><xs:element name="rotation" type="vector"/><xs:element name="scale" type="scale"/></xs:sequence><xs:attribute name="id" type="xs:ID" use="required"/><xs:attribute name="name" type="name" use="required"/></xs:complexType>
+  <xs:complexType name="object"><xs:complexContent><xs:extension base="entity"><xs:sequence><xs:element name="material" type="material"/></xs:sequence><xs:attribute name="group" type="xs:IDREF"/></xs:extension></xs:complexContent></xs:complexType>
+  <xs:complexType name="camera"><xs:complexContent><xs:extension base="entity"><xs:attribute name="fov" type="fov" use="required"/></xs:extension></xs:complexContent></xs:complexType>
+  <xs:complexType name="light"><xs:complexContent><xs:extension base="entity"><xs:sequence><xs:element name="color" type="color"/></xs:sequence><xs:attribute name="brightness" type="brightness" use="required"/></xs:extension></xs:complexContent></xs:complexType>
+  <xs:element name="scene"><xs:complexType><xs:sequence>
+    <xs:element name="camera" type="camera"/>
+    <xs:element name="groups"><xs:complexType><xs:sequence><xs:element name="group" type="entity" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element>
+    <xs:element name="objects"><xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded"><xs:element name="cube" type="object"/><xs:element name="sphere" type="object"/><xs:element name="plane" type="object"/></xs:choice></xs:complexType></xs:element>
+    <xs:element name="lights"><xs:complexType><xs:sequence><xs:element name="light" type="light" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType></xs:element>
+  </xs:sequence><xs:attribute name="schemaVersion" type="xs:positiveInteger" use="required" fixed="1"/></xs:complexType>
+  <xs:key name="groups"><xs:selector xpath="groups/group"/><xs:field xpath="@id"/></xs:key>
+  <xs:keyref name="groupReference" refer="groups"><xs:selector xpath="objects/*"/><xs:field xpath="@group"/></xs:keyref>
+  </xs:element>
+</xs:schema>

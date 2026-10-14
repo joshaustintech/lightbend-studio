@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+runtime="$root/.runtime/jruby-10.1.2.0"
+if [ ! -x "$runtime/bin/jruby" ]; then
+  echo 'JRuby is not installed. Run bin/setup first.' >&2
+  exit 1
+fi
+export GEM_HOME="$runtime/lib/ruby/gems/shared"
+export GEM_PATH="$GEM_HOME"
+export BUNDLE_USER_HOME="$root/.runtime/bundle"
+exec "$runtime/bin/jruby" "$@"
